@@ -107,5 +107,5 @@ class ReciboSoftwareApp(ctk.CTk):
         val_formatado = f"{val_f:,.2f}"
         data_atual = datetime.now().strftime('%d/%m/%Y')
 
-        # HTML limpo em linha única para evitar qualquer erro de string do Python
-        html = "
+        # Montagem do HTML dividida em partes seguras
+        html_part1 = "
