@@ -50,7 +50,6 @@ class ReciboSoftwareApp(ctk.CTk):
         self.minsize(800, 500)
         self.configure(fg_color="#121824")
 
-        # Layout Principal
         header = ctk.CTkFrame(self, height=60, fg_color="#182132", corner_radius=0)
         header.pack(fill="x")
         ctk.CTkLabel(header, text="RECIBO DIGITAL PRO", font=ctk.CTkFont(size=18, weight="bold"), text_color="#f8fafc").pack(side="left", padx=24)
@@ -60,7 +59,6 @@ class ReciboSoftwareApp(ctk.CTk):
 
         ctk.CTkLabel(container, text="Emissão de Recibos de Pagamento", font=ctk.CTkFont(size=14, weight="bold"), text_color="#3b82f6").pack(pady=(20, 15))
 
-        # Formulário
         self.txt_num = self._criar_campo(container, "Número do Documento:", self.db.get_proximo_numero())
         self.txt_cli = self._criar_campo(container, "Nome do Cliente / Pagador:", "")
         self.txt_doc = self._criar_campo(container, "CPF / CNPJ:", "")
@@ -99,7 +97,6 @@ class ReciboSoftwareApp(ctk.CTk):
             messagebox.showerror("Erro", "Valor numérico inválido. Utilize o formato exato, por exemplo: 150,00")
             return
 
-        # Salvar no Banco de Dados
         with self.db.get_connection() as conn:
             conn.execute(
                 "INSERT INTO recibos (numero, cliente_nome, cliente_doc, referente, valor) VALUES (?, ?, ?, ?, ?)",
@@ -107,5 +104,9 @@ class ReciboSoftwareApp(ctk.CTk):
             )
             conn.commit()
 
-        # Gerar HTML para impressão
-        html = f"""
+        val_formatado = f"{val_f:,.2f}"
+        data_atual = datetime.now().strftime('%d/%m/%Y')
+
+        # Montagem de HTML segura sem quebras de f-string compleja
+        html = (
+            "
