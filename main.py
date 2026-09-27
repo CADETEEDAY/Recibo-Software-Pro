@@ -108,4 +108,44 @@ class ReciboSoftwareApp(ctk.CTk):
         data_atual = datetime.now().strftime('%d/%m/%Y')
 
         # Montagem do HTML dividida em partes seguras
-        html_part1 = "
+        html_part1 = "<!DOCTYPE html><html lang='pt-BR'><head><meta charset='UTF-8'><title>Recibo Nº " + num + "</title>"
+        html_part2 = "<style>body { font-family: Arial, sans-serif; padding: 30px; background: #fff; color: #111; }"
+        html_part3 = ".recibo { border: 2px solid #333; padding: 25px; max-width: 700px; margin: auto; position: relative; }"
+        html_part4 = ".topo { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px; }"
+        html_part5 = ".titulo { font-size: 24px; font-weight: bold; }.valor-box { font-size: 18px; font-weight: bold; background: #e5e7eb; padding: 5px 15px; }"
+        html_part6 = ".campo { margin-bottom: 12px; font-size: 14px; }.linha { border-bottom: 1px solid #000; display: inline-block; width: 75%; font-weight: bold; padding-left: 5px; }"
+        html_part7 = ".assinatura { margin-top: 50px; text-align: center; }.traco { border-top: 1px solid #000; width: 300px; margin: auto auto 5px auto; }"
+        html_part8 = "@media print { .btn { display: none; } }</style></head><body><div class='recibo'>"
+        html_part9 = "<button class='btn' onclick='window.print()' style='padding: 10px 20px; background: #3b82f6; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 15px;'>Imprimir / Salvar PDF</button>"
+        html_part10 = "<div class='topo'><div class='titulo'>RECIBO DE PAGAMENTO</div><div class='valor-box'>Nº " + num + " &nbsp;|&nbsp; R$ " + val_formatado + "</div></div>"
+        html_part11 = "<div class='campo'><b>Recebi(emos) de:</b> <span class='linha'>" + cli + "</span></div>"
+        html_part12 = "<div class='campo'><b>CPF / CNPJ:</b> <span class='linha'>" + doc + "</span></div>"
+        html_part13 = "<div class='campo'><b>A quantia de:</b> <span class='linha'>R$ " + val_formatado + "</span></div>"
+        html_part14 = "<div class='campo'><b>Referente a:</b> <span class='linha'>" + ref + "</span></div><br>"
+        html_part15 = "<p style='text-align: right; font-size: 14px;'>Data: " + data_atual + "</p>"
+        html_part16 = "<div class='assinatura'><div class='traco'></div><b>Emitente / Assinatura</b></div></div>"
+        html_part17 = "<script>window.print();</script></body></html>"
+
+        html = (
+            html_part1 + html_part2 + html_part3 + html_part4 + html_part5 +
+            html_part6 + html_part7 + html_part8 + html_part9 + html_part10 +
+            html_part11 + html_part12 + html_part13 + html_part14 + html_part15 +
+            html_part16 + html_part17
+        )
+
+        temp_path = os.path.join(tempfile.gettempdir(), f"recibo_{num}.html")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            f.write(html)
+
+        try:
+            os.startfile(temp_path)
+        except Exception:
+            webbrowser.open(temp_path)
+
+        self.txt_num.delete(0, "end")
+        self.txt_num.insert(0, self.db.get_proximo_numero())
+        messagebox.showinfo("Sucesso", "Recibo gerado com sucesso!")
+
+if __name__ == "__main__":
+    app = ReciboSoftwareApp()
+    app.mainloop()
