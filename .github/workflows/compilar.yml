@@ -18,13 +18,20 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Corrigir Codificacao para UTF-8 Sem BOM
-      shell: powershell
+    - name: Converter Codificacao para UTF-8 Puro
       run: |
-        $path = "main.py"
-        \(raw = Get-Content -Path\)path -Raw
-        \(utf8NoBom = New-Object System.Text.UTF8Encoding(\)false)
-        [System.IO.File]::WriteAllText((Get-Item \(path).FullName,\)raw, $utf8NoBom)
+        python -c "
+        for enc in ['utf-8-sig', 'utf-16', 'utf-16-le', 'utf-16-be', 'cp1252', 'latin-1']:
+            try:
+                with open('main.py', 'r', encoding=enc) as f:
+                    content = f.read()
+                with open('main.py', 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print(f'Convertido com sucesso usando {enc}')
+                break
+            except Exception:
+                pass
+        "
 
     - name: Instalar Dependencias
       run: |
